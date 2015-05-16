@@ -17,13 +17,14 @@ ENGLISH_WORDS.add('parser')
 ENGLISH_WORDS.add('combinator')
 ENGLISH_WORDS = frozenset(ENGLISH_WORDS)
 
-# Some words are also last names or other proper names, but
+# Some words are also last names or other proper names, but a
 # capitalized word appearing in a title should not be misclassified as
 # a proper name, so remove those.
 PROPER_NAMES = {
   w.strip() for w in open('/usr/share/dict/words', 'r') if
   (w[0].isupper() and w.strip().lower() not in ENGLISH_WORDS)}
 PROPER_NAMES.remove('Boolean')
+PROPER_NAMES.remove('Rosetta')
 PROPER_NAMES = frozenset(PROPER_NAMES)
 
 BAD_TITLE_WORDS = (
@@ -39,12 +40,14 @@ BAD_TITLE_WORDS = (
   'thursday', 'friday', 'saturday', 'sunday', 'january', 'february', 'march',
   'april', 'june', 'july', 'august', 'september', 'october', 'november',
   'december', 'journal', 'copyright', 'title', 'uptec', 'oktober',
-  'examensarbete', 'siam', 'computing', 'workshop', 'date', 'document number',
-  'reply to', 'programming language c', 'email', 'e-mail', 'e mail', 'submitted',
-  'functional pearl', 'acta', 'springer', 'verlag', 'elsevier', 'institute',
-  'lecture', 'preliminary version', 'monograph', 'supervisor', 'prof', 'dr.',
-  'section', 'abstract.', 'edited', 'sciencedirect', 'computer programming',
-  'arxiv', 'computational linguistics'
+  'examensarbete', 'siam', 'computing', 'workshop', 'document number',
+  'reply to', 'programming language c', 'email', 'e-mail', 'e mail',
+  'submitted', 'functional pearl', 'acta', 'springer', 'verlag', 'elsevier',
+  'institute', 'lecture', 'preliminary version', 'monograph', 'supervisor',
+  'prof', 'dr.', 'section', 'abstract.', 'edited', 'sciencedirect',
+  'computer programming', 'arxiv', 'computational linguistics', 'contents',
+  'reference', 'project', 'chapter', 'practices', 'talk', 'open access',
+  'seminar'
 )
 
 
@@ -157,7 +160,7 @@ def guess_title(txt_name, codec):
     # is useful for reducing the number of file names that span
     # multiple lines.
     while (title[-1].endswith((':', '-')) or title[-1][0].islower() or
-           len(title) < 7):
+           len(title) < 12):
       line = clean_up(next(text_file))
       if bad_title(line, short_word_limit=2):
         break
@@ -174,10 +177,14 @@ def guess_title(txt_name, codec):
   return unicodedata.normalize('NFKD', title).encode('ascii','ignore')
 
 def title_rename(title, fn, extension=''):
-  os.rename(fn, title + extension)
-  print('Rename of %s complete' % fn)
-  print('Title: %s%s' % (title, extension))
-  return title + extension
+  # This has a race condition on Unix that I don't know how to fix.
+  if not os.path.isfile(title + extension):
+    os.rename(fn, title + extension)
+    print('Rename of %s complete' % fn)
+    print('Title: %s%s' % (title, extension))
+    return title + extension
+  else:
+    raise IOError('A file named %s%s already exists.' % (title, extension))
 
 if __name__ == '__main__':
   fn = sys.argv[1]
