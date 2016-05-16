@@ -18,6 +18,8 @@ ENGLISH_WORDS = {
 ENGLISH_WORDS.add('parser')
 ENGLISH_WORDS.add('parsers')
 ENGLISH_WORDS.add('combinator')
+ENGLISH_WORDS.add('subtype')
+ENGLISH_WORDS.add('subtyping')
 ENGLISH_WORDS = frozenset(ENGLISH_WORDS)
 
 # Some words are also last names or other proper names, but a
@@ -39,7 +41,7 @@ BAD_TITLE_WORDS = (
     'brevia', 'commun ', 'physical review', 'conference', 'symantec research',
     'symposium', 'vol', 'ieee', 'editor', 'published', 'permissions',
     'higher-order symb comput', 'doi', 'university', 'no.', 'issue', 'pp.',
-    'society', 'report', 'dissertation', 'thesis', 'association',
+    'society', 'dissertation', 'thesis', 'association',
     'computer science', 'consideration', 'publication', 'faculty',
     'department', 'software engineering', 'submission', 'monday', 'tuesday',
     'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'january',
@@ -51,9 +53,12 @@ BAD_TITLE_WORDS = (
     'elsevier', 'institute', 'lecture', 'preliminary version', 'monograph',
     'supervisor', 'prof', 'dr.', 'section', 'abstract.', 'edited',
     'sciencedirect', 'computer programming', 'arxiv',
-    'computational linguistics', 'contents', 'reference', 'project', 'chapter',
+    'computational linguistics', 'contents', 'project', 'chapter',
     'practices', 'talk', 'open access', 'seminar', 'brics', 'squibs',
-    'meeting', 'departamento', 'number')
+    'meeting', 'departamento', 'number', 'insitution', 'repository',
+    'technical', 'date', 'page', 'press', 'research', 'publisher',
+    'in programming languages', 'foundations and trends',
+    'and experience', 'tech', 'laboratory')
 
 
 class TitleError(ValueError):
@@ -103,8 +108,8 @@ def bad_title(title, short_word_limit=4):
     split_title = [w for w in split_words.findall(title)
                    if not (len(w) == 1 and w.isdigit())]
     print(split_title)
-    print('Bad title word: %s' % any(w.lower() in BAD_TITLE_WORDS
-                                     for w in split_title))
+    print('Bad title words: %s' % ' '.join(w for w in split_title if
+                                           w.lower() in BAD_TITLE_WORDS))
     print('Too many proper names: %s' %
           (3 * sum(w.capitalize() in PROPER_NAMES
                    for w in split_title) >= len(split_title)))
@@ -120,7 +125,7 @@ def bad_title(title, short_word_limit=4):
         len(split_title) == 0 or title.lower() == 'by' or
         split_title[-1].isdigit() or
         # If any of these words are present, it's probably not a title.
-        any(w in title.lower() for w in BAD_TITLE_WORDS) or
+        any(w.lower() in BAD_TITLE_WORDS for w in split_title) or
         # If one-third or more of the words are proper names, it's
         # probably an author or institution line.
         3 * sum(w.capitalize() in PROPER_NAMES
@@ -128,8 +133,8 @@ def bad_title(title, short_word_limit=4):
         # There must be at least one English word longer than some
         # number of letters in the title, not counting 'and'.
         all(w.lower() not in ENGLISH_WORDS or len(w) < short_word_limit or
-            w.lower() == 'and'
-            for w in split_title) or  # Copyright notices aren't titles.
+            w.lower() == 'and' for w in split_title) or
+        # Copyright notices aren't titles.
         copyright_notice.match(title))  # or journal_citation.match(title))
 
 
