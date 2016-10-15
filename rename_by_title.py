@@ -30,35 +30,52 @@ PROPER_NAMES = {
     for w in open('/usr/share/dict/words', 'r')
     if (w[0].isupper() and w.strip().lower() not in ENGLISH_WORDS)
 }
-PROPER_NAMES.remove('Boolean')
-PROPER_NAMES.remove('Rosetta')
-PROPER_NAMES.remove('Lr')
+try:
+    PROPER_NAMES.remove('Boolean')
+except KeyError:
+    pass
+try:
+    PROPER_NAMES.remove('Rosetta')
+except KeyError:
+    pass
+try:
+    PROPER_NAMES.remove('Lr')
+except KeyError:
+    pass
 PROPER_NAMES = frozenset(PROPER_NAMES)
 
+# 'ar ticle', 'physical review', 'symantec research', 'higher-order
+# symb comput', 'software engineering', 'in programming languages',
+# 'foundations and trends', 'and experience', 'computational
+# linguistics', 'computer programming', 'computer science', 'document
+# number', 'reply to', 'programming language c', 'e mail', 'functional
+# pearl', 'preliminary version', 'open access',
+
 BAD_TITLE_WORDS = (
-    'usa', 'proceedings', 'letter', 'article', 'ar ticle', 'communicated by',
+    'usa', 'proceedings', 'letter', 'article', 'articles', 'communicated by',
     'communicated_by', 'manuscript', 'public access', 'usenix', 'perspectives',
-    'brevia', 'commun ', 'physical review', 'conference', 'symantec research',
+    'brevia', 'commun ', 'conference', 
     'symposium', 'vol', 'ieee', 'editor', 'published', 'permissions',
-    'higher-order symb comput', 'doi', 'university', 'no.', 'issue', 'pp.',
+    'doi', 'university', 'no.', 'issue', 'pp.',
     'society', 'dissertation', 'thesis', 'association',
-    'computer science', 'consideration', 'publication', 'faculty',
-    'department', 'software engineering', 'submission', 'monday', 'tuesday',
+    'consideration', 'publication', 'faculty',
+    'department', 'submission', 'monday', 'tuesday',
     'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'january',
     'february', 'march', 'april', 'june', 'july', 'august', 'september',
     'october', 'november', 'december', 'journal', 'copyright', 'title',
-    'uptec', 'oktober', 'examensarbete', 'siam', 'computing', 'workshop',
-    'document number', 'reply to', 'programming language c', 'email', 'e-mail',
-    'e mail', 'submitted', 'functional pearl', 'acta', 'springer', 'verlag',
-    'elsevier', 'institute', 'lecture', 'preliminary version', 'monograph',
+    'uptec', 'oktober', 'examensarbete', 'siam', 'workshop',
+    'email', 'e-mail',
+    'submitted', 'acta', 'springer', 'verlag',
+    'elsevier', 'institute', 'lecture', 'monograph',
     'supervisor', 'prof', 'dr.', 'section', 'abstract.', 'edited',
-    'sciencedirect', 'computer programming', 'arxiv',
-    'computational linguistics', 'contents', 'project', 'chapter',
-    'practices', 'talk', 'open access', 'seminar', 'brics', 'squibs',
+    'sciencedirect', 'arxiv',
+    'contents', 'project', 'chapter',
+    'practices', 'talk', 'seminar', 'brics', 'squibs',
     'meeting', 'departamento', 'number', 'insitution', 'repository',
     'technical', 'date', 'page', 'press', 'research', 'publisher',
-    'in programming languages', 'foundations and trends',
-    'and experience', 'tech', 'laboratory')
+    'tech', 'laboratory', 'id',
+    'viewpoint', 'letters', 'week', 'month', 'trial', 'scholarly', 'volume',
+    'editorials')
 
 
 class TitleError(ValueError):
