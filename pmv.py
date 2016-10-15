@@ -38,12 +38,11 @@ if sys.argv[1] == '--dir':
     paper_dir = sys.argv[2]
     sys.argv.pop(1)
     sys.argv.pop(1)
+    print('Saving output to %s' % paper_dir)
 else:
-    paper_dir = './'
-print('Saving output to %s' % paper_dir)
+    paper_dir = None
 
-files = sys.argv[1:]
-for input_name in files:
+for input_name in sys.argv[1:]:
     mime_type = subprocess.check_output(['file', '--brief', '--mime-type',
                                          input_name]).strip()
     # print(mime_type)
@@ -73,7 +72,10 @@ for input_name in files:
             raise ValueError('%s is not a PDF or Postscript file.' %
                              input_name)
         fn = title_rename(title, input_name, extension)
-        os.rename(fn, paper_dir + fn)
+        if paper_dir is not None:
+            os.rename(fn, paper_dir + fn)
+        else:
+            os.rename(fn, os.path.dirname(input_name) + '/' + fn)
     except Exception:
         traceback.print_exc()
     finally:
